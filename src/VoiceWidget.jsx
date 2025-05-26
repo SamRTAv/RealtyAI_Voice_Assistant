@@ -273,6 +273,7 @@ const VoiceWidget = () => {
     return () => release();
   }, [init, start, release, isFormSubmitted]);
 
+  
   useEffect(() => {
     if (isFormSubmitted) {
       const script = document.createElement("script");
