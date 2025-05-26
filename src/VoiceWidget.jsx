@@ -241,6 +241,18 @@ const VoiceWidget = () => {
     await espCharacteristic.writeValue(encoder.encode("BLINK"));
   };
 
+  const sendOnCommand = async () => {
+    if (!espCharacteristic) return;
+    const encoder = new TextEncoder();
+    await espCharacteristic.writeValue(encoder.encode("ON"));
+  };
+
+    const sendOffCommand = async () => {
+    if (!espCharacteristic) return;
+    const encoder = new TextEncoder();
+    await espCharacteristic.writeValue(encoder.encode("STOP"));
+  };
+
   const inactivityTimeoutRef = useRef(null);
 
   const resetInactivityTimer = () => {
@@ -254,6 +266,12 @@ const VoiceWidget = () => {
       if (endCallButton) {
         const audio = new Audio("/disconnect.mp3"); // Replace with your intro clip
         audio.play();
+
+        (async () => {
+          await sendOffCommand();
+          console.log("Eva disconnected. Stopped repeating audio.");
+        })();
+
         endCallButton.click(); // simulate end call
       }
     }, 1000); // 10 seconds
@@ -262,7 +280,8 @@ const VoiceWidget = () => {
   useEffect(() => {
     if (isFormSubmitted) {
       init(
-        "3MjB/vyRS/E0p2QJ+e7F0DKR9ADQO+JlMMFkAjd1s2Q5UpzZZqZK3A==",
+        "BRJDFIUqR9s23N5/sfA6e7IErp5AEJxSaPKyg//SUwpTiTFQhNRXNw==",
+        // "3MjB/vyRS/E0p2QJ+e7F0DKR9ADQO+JlMMFkAjd1s2Q5UpzZZqZK3A==",
         // "eGdFvgWbfEjISTLCKKHQza1K4Kf++vp+hHnu3PlC3ZMb+hktuvwO/g==",
         porcupineKeyword,
         porcupineModel
@@ -273,7 +292,6 @@ const VoiceWidget = () => {
     return () => release();
   }, [init, start, release, isFormSubmitted]);
 
-  
   useEffect(() => {
     if (isFormSubmitted) {
       const script = document.createElement("script");
@@ -352,7 +370,7 @@ const VoiceWidget = () => {
     // }, 2000);
     audio.loop = false; // Play once
     audio.play();
-    
+
     let intervalId = null;
 
     const playAudio = () => {
@@ -424,8 +442,12 @@ const VoiceWidget = () => {
         repeatedAudio.pause();
         console.log("Assistant has started speaking.");
         clearInterval(intervalId); // stop playing audio
-        // clearInterval(checkConnection); // stop checking
-        console.log("Eva connected. Stopped repeating audio.");
+
+        // Call async function inside a non-async callback
+        (async () => {
+          await sendOnCommand();
+          console.log("Eva connected. Stopped repeating audio.");
+        })();
       });
 
       vapiRef.current.on("speech-end", () => {
