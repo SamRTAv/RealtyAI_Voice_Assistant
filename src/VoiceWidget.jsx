@@ -205,7 +205,7 @@ const VoiceWidget = () => {
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
 
   const porcupineKeyword = {
-    publicPath: "assets/Hi-Eva_en_wasm_v3_0_0.ppn",
+    publicPath: "assets/Hi-Eva_en_android_v3_0_0.ppn",
     label: "Hi Eva",
   };
 
