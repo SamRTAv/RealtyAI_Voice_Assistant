@@ -464,6 +464,7 @@ const VoiceWidget = () => {
         clearInterval(intervalId); // stop playing audio
 
         // Call async function inside a non-async callback
+        //change 11 - added the on command for esp32
         (async () => {
           await sendOnCommand();
           console.log("Eva connected. Stopped repeating audio.");
@@ -505,6 +506,8 @@ const VoiceWidget = () => {
             );
             clearInterval(intervalId);
             vapiRef.current.off("speech-start", onSpeechStart); // cleanup listener
+
+            //change 12 - before switching off setting the medi detect and wake word back to initial settings
             setMediaDetect(false);
             setWakeWordDetected(false);
             resetInactivityTimer();
@@ -520,8 +523,12 @@ const VoiceWidget = () => {
         // clearInterval(checkConnection);
       };
     }
+
+    //change 13 - included the dependecy of this useffect hook on mediaDeetection
   }, [keywordDetection, isFormSubmitted, mediaDetection]);
 
+
+  //change 14 - Lokesh code for the media Detetction, setMediaDeetect = true after detection
   useEffect(() => {
     if (!isFormSubmitted) return;
 
@@ -561,6 +568,8 @@ const VoiceWidget = () => {
     };
   }, [isFormSubmitted]);
 
+
+  
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const nameInput = document.getElementById("child-name");
