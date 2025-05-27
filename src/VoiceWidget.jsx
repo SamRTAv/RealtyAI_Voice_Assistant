@@ -181,11 +181,15 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { usePorcupine } from "@picovoice/porcupine-react";
+
+//Change 1 - import use
 import { use } from "react";
 
 const VoiceWidget = () => {
   const vapiRef = useRef(null);
   const [espCharacteristic, setEspCharacteristic] = useState(null);
+
+  // change 2 - defining the media detection for play/pause button
   const [mediaDetection, setMediaDetect] = useState(false);
 
   const {
@@ -204,6 +208,8 @@ const VoiceWidget = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
 
+
+  //change 3 - I have changed the porcupine publicPath to run and deploy on android, if you are running on web let it be wasm.ppn file
   const porcupineKeyword = {
     publicPath: "assets/Hi-Eva_en_android_v3_0_0.ppn",
     label: "Hi Eva",
@@ -241,6 +247,7 @@ const VoiceWidget = () => {
     await espCharacteristic.writeValue(encoder.encode("BLINK"));
   };
 
+  //Change 4 - defining the on and off commands for esp32
   const sendOnCommand = async () => {
     if (!espCharacteristic) return;
     const encoder = new TextEncoder();
@@ -267,6 +274,8 @@ const VoiceWidget = () => {
         const audio = new Audio("/disconnect.mp3"); // Replace with your intro clip
         audio.play();
 
+
+        //change 5- putting the off command inside the async function just before disconnecting
         (async () => {
           await sendOffCommand();
           console.log("Eva disconnected. Stopped repeating audio.");
@@ -280,6 +289,8 @@ const VoiceWidget = () => {
   useEffect(() => {
     if (isFormSubmitted) {
       init(
+
+        //change 6 - here also to runt he app deployed on android i have put the access key for androis change it accordingly to your access id
         "BRJDFIUqR9s23N5/sfA6e7IErp5AEJxSaPKyg//SUwpTiTFQhNRXNw==",
         // "3MjB/vyRS/E0p2QJ+e7F0DKR9ADQO+JlMMFkAjd1s2Q5UpzZZqZK3A==",
         // "eGdFvgWbfEjISTLCKKHQza1K4Kf++vp+hHnu3PlC3ZMb+hktuvwO/g==",
@@ -306,6 +317,8 @@ const VoiceWidget = () => {
           assistant: {
             model: {
               provider: "openai",
+
+              //change 7 - i have changed the model to gpt 4o also introduced temperature
               model: "gpt-4o",
               // systemPrompt: `You are an intelligent, poetic AI assistant with the whimsical personality of a clever cat. Everything you say must be delivered in perfect rhyme—every line must rhyme with the next or follow a consistent rhyme scheme (AABB, ABAB, or AAAA). No matter the subject—be it casual chat, complex tech, serious questions, or silly jokes—you must always maintain rhyme in your speech. Do not break character or rhyme. Keep the rhythm flowing, your tone fun and witty, like a feline bard who's clever and pretty. Follow these instructions while replying: ${additionalInstructions}`,
               systemPrompt: `You're a versatile AI assistant named Eva with a personality of a cat who is fun to talk with. 
@@ -359,6 +372,8 @@ const VoiceWidget = () => {
   //   }
   // }, [isFormSubmitted, keywordDetection]);
 
+
+  //change 8 - this compelte use effect hook is defined for the wake up audio - i am not connected to ai pls wake me up by hi eva
   useEffect(() => {
     if (!isFormSubmitted) return;
 
@@ -405,8 +420,13 @@ const VoiceWidget = () => {
     };
   }, [isFormSubmitted, keywordDetection, mediaDetection]);
 
+
+  
   useEffect(() => {
+    //change 9 - in the conditions i have added the mediadetection to have the same flow of instructions after media or keyword detection
     if ((mediaDetection || keywordDetection) && isFormSubmitted) {
+
+      //change 10 - added another condition to run setwakeword only if key word is detected and not when media key is pressed
       if (keywordDetection) {
         console.log("Wake word detected:", keywordDetection.label);
         setWakeWordDetected(true);
